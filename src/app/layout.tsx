@@ -1,3 +1,4 @@
+import "./globals.css";
 export const metadata = {
   title: "Voice Of Bankura",
   description: "Bengali News Website",
