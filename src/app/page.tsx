@@ -4,44 +4,66 @@ async function getArticles() {
   const res = await fetch("http://localhost:3001/api/articles", {
     cache: "no-store",
   });
+
   return res.json();
 }
 
 export default async function Home() {
   const articles = await getArticles();
+
   const featured = articles[0];
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div>
+
+      {/* 🔴 TOP BAR */}
+      <div className="bg-red-700 text-white text-sm py-2 px-4 flex justify-between">
+        <span>ভয়েস অফ বাঁকুড়া</span>
+        <span>বাংলার খবর বাংলার ভাষায়</span>
+      </div>
 
       {/* 🔥 HEADER */}
       <div className="bg-white shadow sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto p-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-red-600">
+        <div className="max-w-7xl mx-auto p-4 flex justify-between items-center">
+
+          <h1 className="text-4xl font-bold text-red-700">
             Voice Of Bankura
           </h1>
-          <span className="text-sm text-gray-500">
-            Bengali News Portal
-          </span>
+
+          <div className="hidden md:flex gap-6 font-medium">
+            <span>রাজ্য</span>
+            <span>দেশ</span>
+            <span>খেলা</span>
+            <span>বিনোদন</span>
+            <span>স্থানীয় খবর</span>
+          </div>
+
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-4">
+      {/* 🚨 BREAKING NEWS */}
+      <div className="bg-black text-white py-2 overflow-hidden">
+        <marquee>
+          🔥 ব্রেকিং নিউজ: ভয়েস অফ বাঁকুড়া এখন ডিজিটাল নিউজ পোর্টাল
+        </marquee>
+      </div>
 
-        {/* 🔥 FEATURED NEWS */}
+      <div className="max-w-7xl mx-auto p-4">
+
+        {/* FEATURED */}
         {featured && (
           <Link href={`/article/${featured._id}`}>
-            <div className="relative mb-8 group cursor-pointer">
+            <div className="relative mb-10 rounded-2xl overflow-hidden group">
 
-              {featured.image && (
-                <img
-                  src={featured.image}
-                  className="w-full h-[350px] object-cover rounded-xl"
-                />
-              )}
+              <img
+                src={featured.image}
+                className="w-full h-[450px] object-cover group-hover:scale-105 transition duration-500"
+              />
 
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-5 rounded-xl">
-                <h2 className="text-white text-2xl font-bold group-hover:underline">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
+
+              <div className="absolute bottom-0 p-6">
+                <h2 className="text-white text-4xl font-bold max-w-3xl leading-snug">
                   {featured.title}
                 </h2>
               </div>
@@ -50,55 +72,38 @@ export default async function Home() {
           </Link>
         )}
 
-        {/* 🎥 VIDEO SECTION */}
-        <div className="grid md:grid-cols-2 gap-6 mb-10">
+        {/* NEWS GRID */}
+        <div className="grid md:grid-cols-3 gap-8">
 
-          <div className="bg-white p-3 rounded-xl shadow">
-            <h2 className="font-semibold mb-2">YouTube</h2>
-            <iframe
-              className="w-full h-56 rounded"
-              src="https://www.youtube.com/embed?listType=user_uploads&list=YOUR_CHANNEL_ID"
-              allowFullScreen
-            />
-          </div>
-
-          <div className="bg-white p-3 rounded-xl shadow">
-            <h2 className="font-semibold mb-2">Facebook</h2>
-            <iframe
-              className="w-full h-56 rounded"
-              src="https://www.facebook.com/plugins/video.php?href=YOUR_VIDEO_LINK"
-              allowFullScreen
-            />
-          </div>
-
-        </div>
-
-        {/* 📰 NEWS GRID */}
-        <div className="grid md:grid-cols-3 gap-6">
           {articles.slice(1).map((item: any) => (
             <Link href={`/article/${item._id}`} key={item._id}>
-              <div className="bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition duration-300 cursor-pointer">
 
-                {item.image && (
+              <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-2xl transition duration-300 group">
+
+                <div className="overflow-hidden">
                   <img
                     src={item.image}
-                    className="w-full h-40 object-cover"
+                    className="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
                   />
-                )}
+                </div>
 
-                <div className="p-3">
-                  <h3 className="font-semibold text-lg hover:text-red-600 transition">
+                <div className="p-5">
+
+                  <h2 className="font-bold text-xl leading-snug group-hover:text-red-700 transition">
                     {item.title}
-                  </h3>
+                  </h2>
 
-                  <p className="text-gray-600 text-sm mt-1">
-                    {item.content?.slice(0, 70)}...
+                  <p className="text-gray-600 mt-3 text-sm">
+                    {item.content?.slice(0, 90)}...
                   </p>
+
                 </div>
 
               </div>
+
             </Link>
           ))}
+
         </div>
 
       </div>
