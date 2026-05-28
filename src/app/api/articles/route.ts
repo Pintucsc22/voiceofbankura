@@ -5,6 +5,10 @@ const ArticleSchema = new mongoose.Schema({
   title: String,
   content: String,
   image: String,
+
+  // ✅ NEW
+  category: String,
+
   createdAt: {
     type: Date,
     default: Date.now,
@@ -33,6 +37,9 @@ export async function POST(req: Request) {
     title: body.title,
     content: body.content,
     image: body.image,
+
+    // ✅ NEW
+    category: body.category,
   });
 
   return Response.json(article);

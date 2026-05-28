@@ -5,6 +5,7 @@ const ArticleSchema = new mongoose.Schema({
   title: String,
   content: String,
   image: String,
+  category: String,
 });
 
 const Article =
@@ -21,25 +22,53 @@ async function getArticle(id: string) {
 export default async function ArticlePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const article = await getArticle(params.id);
+
+  const { id } = await params;
+
+  const article = await getArticle(id);
 
   if (!article) {
     return <div>Article not found</div>;
   }
 
   return (
-    <div className="p-5">
-      <h1 className="text-3xl font-bold mb-4">
-        {article.title}
-      </h1>
+    <div className="bg-gray-100 min-h-screen">
 
-      {article.image && (
-        <img src={article.image} className="mb-4 w-full" />
-      )}
+      {/* HEADER */}
+      <div className="bg-red-700 text-white py-4 px-5 shadow">
+        <h1 className="text-3xl font-bold">
+          Voice Of Bankura
+        </h1>
+      </div>
 
-      <p>{article.content}</p>
+      <div className="max-w-4xl mx-auto bg-white mt-10 p-6 rounded-2xl shadow">
+
+        {/* CATEGORY */}
+        <p className="text-red-600 font-semibold mb-3">
+          {article.category}
+        </p>
+
+        {/* TITLE */}
+        <h1 className="text-4xl font-bold leading-snug mb-6">
+          {article.title}
+        </h1>
+
+        {/* IMAGE */}
+        {article.image && (
+          <img
+            src={article.image}
+            className="w-full rounded-2xl mb-8"
+          />
+        )}
+
+        {/* CONTENT */}
+        <div className="text-lg leading-9 text-gray-800 whitespace-pre-line">
+          {article.content}
+        </div>
+
+      </div>
     </div>
   );
 }

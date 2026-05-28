@@ -6,6 +6,7 @@ export default function AddArticle() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [category, setCategory] = useState("Bankura News");
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -34,6 +35,7 @@ export default function AddArticle() {
         title,
         content,
         image: imageUrl,
+        category,
       }),
     });
 
@@ -69,6 +71,21 @@ export default function AddArticle() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
+        <select
+          className="border p-2 w-full"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+
+          <option>Bankura News</option>
+          <option>State News</option>
+          <option>Rashifal</option>
+          <option>Weather</option>
+          <option>Gold Price</option>
+          <option>Sports</option>
+          <option>Entertainment</option>
+
+        </select>
 
         {/* Image Upload */}
         <input

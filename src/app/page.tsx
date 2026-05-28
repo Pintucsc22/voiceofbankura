@@ -8,10 +8,33 @@ async function getArticles() {
   return res.json();
 }
 
+async function getMedia() {
+  const res = await fetch("http://localhost:3001/api/media", {
+    cache: "no-store",
+  });
+
+  return res.json();
+}
+
 export default async function Home() {
   const articles = await getArticles();
+  const media = await getMedia();
+
+  const latestMedia = media[0];
 
   const featured = articles[0];
+
+  const bankuraNews = articles.filter(
+    (item: any) => item.category === "Bankura News"
+  );
+
+  const stateNews = articles.filter(
+    (item: any) => item.category === "State News"
+  );
+
+  const rashifalNews = articles.filter(
+    (item: any) => item.category === "Rashifal"
+  );
 
   return (
     <div>
@@ -72,39 +95,198 @@ export default async function Home() {
           </Link>
         )}
 
-        {/* NEWS GRID */}
-        <div className="grid md:grid-cols-3 gap-8">
+        {/* 🏙 BANKURA NEWS */}
+        <div className="mb-14">
 
-          {articles.slice(1).map((item: any) => (
-            <Link href={`/article/${item._id}`} key={item._id}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-2 h-8 bg-red-700 rounded"></div>
 
-              <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-2xl transition duration-300 group">
+            <h2 className="text-3xl font-bold">
+              🏙 বাঁকুড়া সংবাদ
+            </h2>
+          </div>
 
-                <div className="overflow-hidden">
-                  <img
-                    src={item.image}
-                    className="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
-                  />
+          <div className="grid md:grid-cols-3 gap-8">
+
+            {bankuraNews.map((item: any) => (
+              <Link href={`/article/${item._id}`} key={item._id}>
+
+                <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-2xl transition duration-300 group">
+
+                  <div className="overflow-hidden">
+                    <img
+                      src={item.image}
+                      className="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
+                    />
+                  </div>
+
+                  <div className="p-5">
+
+                    <p className="text-red-600 text-sm font-semibold mb-2">
+                      {item.category}
+                    </p>
+
+                    <h2 className="font-bold text-xl leading-snug group-hover:text-red-700 transition">
+                      {item.title}
+                    </h2>
+
+                    <p className="text-gray-600 mt-3 text-sm">
+                      {item.content?.slice(0, 90)}...
+                    </p>
+
+                  </div>
+
                 </div>
 
-                <div className="p-5">
+              </Link>
+            ))}
 
-                  <h2 className="font-bold text-xl leading-snug group-hover:text-red-700 transition">
+          </div>
+
+        </div>
+
+        {/* 🏛 STATE NEWS */}
+        <div className="mb-14">
+
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-2 h-8 bg-blue-700 rounded"></div>
+
+            <h2 className="text-3xl font-bold">
+              🏛 রাজ্য সংবাদ
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+
+            {stateNews.map((item: any) => (
+              <Link href={`/article/${item._id}`} key={item._id}>
+
+                <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-2xl transition duration-300 group">
+
+                  <div className="overflow-hidden">
+                    <img
+                      src={item.image}
+                      className="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
+                    />
+                  </div>
+
+                  <div className="p-5">
+
+                    <p className="text-blue-600 text-sm font-semibold mb-2">
+                      {item.category}
+                    </p>
+
+                    <h2 className="font-bold text-xl leading-snug group-hover:text-blue-700 transition">
+                      {item.title}
+                    </h2>
+
+                    <p className="text-gray-600 mt-3 text-sm">
+                      {item.content?.slice(0, 90)}...
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </Link>
+            ))}
+
+          </div>
+
+        </div>
+
+        {/* 🔮 RASHIFAL */}
+        <div className="mb-14">
+
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-2 h-8 bg-yellow-500 rounded"></div>
+
+            <h2 className="text-3xl font-bold">
+              🔮 আজকের রাশিফল
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+
+            {rashifalNews.map((item: any) => (
+              <Link href={`/article/${item._id}`} key={item._id}>
+
+                <div className="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition">
+
+                  <h2 className="font-bold text-2xl mb-3">
                     {item.title}
                   </h2>
 
-                  <p className="text-gray-600 mt-3 text-sm">
-                    {item.content?.slice(0, 90)}...
+                  <p className="text-gray-700">
+                    {item.content?.slice(0, 180)}...
                   </p>
 
                 </div>
 
-              </div>
+              </Link>
+            ))}
 
-            </Link>
-          ))}
+          </div>
 
         </div>
+
+        {/* 🎥 VIDEO SECTION */}
+        {latestMedia && (
+          <div className="mt-16">
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-2 h-8 bg-red-700 rounded"></div>
+
+              <h2 className="text-3xl font-bold">
+                🎥 ভিডিও সংবাদ
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+
+              {/* YOUTUBE */}
+              {latestMedia.youtubeLink && (
+                <div className="bg-white rounded-2xl p-4 shadow">
+
+                  <h3 className="font-bold mb-4 text-xl">
+                    YouTube Video
+                  </h3>
+
+                  <iframe
+                    className="w-full h-[300px] rounded-xl"
+                    src={latestMedia.youtubeLink.replace(
+                      "watch?v=",
+                      "embed/"
+                    )}
+                    allowFullScreen
+                  ></iframe>
+
+                </div>
+              )}
+
+              {/* FACEBOOK */}
+              {latestMedia.facebookLink && (
+                <div className="bg-white rounded-2xl p-4 shadow">
+
+                  <h3 className="font-bold mb-4 text-xl">
+                    Facebook Video
+                  </h3>
+
+                  <a
+                    href={latestMedia.facebookLink}
+                    target="_blank"
+                    className="block bg-blue-600 text-white text-center py-20 rounded-xl text-2xl font-bold hover:bg-blue-700 transition"
+                  >
+                    ▶ Watch Facebook Video
+                  </a>
+
+                </div>
+              )}
+
+            </div>
+
+          </div>
+        )}
 
       </div>
     </div>
