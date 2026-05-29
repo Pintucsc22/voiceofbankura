@@ -8,6 +8,7 @@ const ArticleSchema = new mongoose.Schema({
 
   // ✅ NEW
   category: String,
+  video: String,
 
   createdAt: {
     type: Date,
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
 
     // ✅ NEW
     category: body.category,
+    video: body.video,
   });
 
   return Response.json(article);

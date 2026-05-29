@@ -8,22 +8,13 @@ async function getArticles() {
   return res.json();
 }
 
-async function getMedia() {
-  const res = await fetch("http://localhost:3001/api/media", {
-    cache: "no-store",
-  });
-
-  return res.json();
-}
-
 export default async function Home() {
-  const articles = await getArticles();
-  const media = await getMedia();
 
-  const latestMedia = media[0];
+  const articles = await getArticles();
 
   const featured = articles[0];
 
+  const latestNews = articles.slice(1, 6);
   const bankuraNews = articles.filter(
     (item: any) => item.category === "Bankura News"
   );
@@ -32,263 +23,876 @@ export default async function Home() {
     (item: any) => item.category === "State News"
   );
 
-  const rashifalNews = articles.filter(
-    (item: any) => item.category === "Rashifal"
+  const sportsNews = articles.filter(
+    (item: any) => item.category === "Sports"
   );
 
+  const entertainmentNews = articles.filter(
+    (item: any) => item.category === "Entertainment"
+  );
+  const videoNews = articles.filter(
+    (item: any) => item.video
+  );
+  const rashis = [
+  { icon: "♈", name: "মেষ" },
+  { icon: "♉", name: "বৃষ" },
+  { icon: "♊", name: "মিথুন" },
+  { icon: "♋", name: "কর্কট" },
+  { icon: "♌", name: "সিংহ" },
+  { icon: "♍", name: "কন্যা" },
+  { icon: "♎", name: "তুলা" },
+  { icon: "♏", name: "বৃশ্চিক" },
+  { icon: "♐", name: "ধনু" },
+  { icon: "♑", name: "মকর" },
+  { icon: "♒", name: "কুম্ভ" },
+  { icon: "♓", name: "মীন" },
+];
+
   return (
-    <div>
+    <div className="bg-gray-100 min-h-screen">
 
-      {/* 🔴 TOP BAR */}
-      <div className="bg-red-700 text-white text-sm py-2 px-4 flex justify-between">
-        <span>ভয়েস অফ বাঁকুড়া</span>
-        <span>বাংলার খবর বাংলার ভাষায়</span>
-      </div>
+      {/* 🔥 TOP BREAKING BAR */}
+      <div className="bg-red-700 text-white py-2 overflow-hidden">
 
-      {/* 🔥 HEADER */}
-      <div className="bg-white shadow sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto p-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto flex items-center gap-4">
 
-          <h1 className="text-4xl font-bold text-red-700">
-            Voice Of Bankura
-          </h1>
+          <span className="bg-white text-red-700 px-3 py-1 font-bold rounded">
+            BREAKING
+          </span>
 
-          <div className="hidden md:flex gap-6 font-medium">
-            <span>রাজ্য</span>
-            <span>দেশ</span>
-            <span>খেলা</span>
-            <span>বিনোদন</span>
-            <span>স্থানীয় খবর</span>
-          </div>
+          <marquee className="font-medium">
+            🌤 আজকের আবহাওয়া • 🪙 আজকের সোনার দাম • 🔥 Voice Of Bankura Digital News Portal
+          </marquee>
 
         </div>
+
       </div>
 
-      {/* 🚨 BREAKING NEWS */}
-      <div className="bg-black text-white py-2 overflow-hidden">
-        <marquee>
-          🔥 ব্রেকিং নিউজ: ভয়েস অফ বাঁকুড়া এখন ডিজিটাল নিউজ পোর্টাল
-        </marquee>
-      </div>
 
-      <div className="max-w-7xl mx-auto p-4">
+      {/* 🔥 MAIN HEADER */}
+      <div className="bg-white shadow-md">
 
-        {/* FEATURED */}
-        {featured && (
-          <Link href={`/article/${featured._id}`}>
-            <div className="relative mb-10 rounded-2xl overflow-hidden group">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
 
-              <img
-                src={featured.image}
-                className="w-full h-[450px] object-cover group-hover:scale-105 transition duration-500"
-              />
+          {/* LEFT LOGO */}
+          <div className="flex items-center gap-4">
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
+            <div className="w-16 h-16 rounded-full bg-red-700 text-white flex items-center justify-center text-2xl font-bold shadow-lg">
+              VOB
+            </div>
 
-              <div className="absolute bottom-0 p-6">
-                <h2 className="text-white text-4xl font-bold max-w-3xl leading-snug">
-                  {featured.title}
-                </h2>
-              </div>
+            <div>
+
+              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+                Voice Of Bankura
+              </h1>
+
+              <p className="text-gray-500 mt-1">
+                বাংলার খবর বাংলার ভাষায়
+              </p>
 
             </div>
-          </Link>
-        )}
 
-        {/* 🏙 BANKURA NEWS */}
-        <div className="mb-14">
-
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-2 h-8 bg-red-700 rounded"></div>
-
-            <h2 className="text-3xl font-bold">
-              🏙 বাঁকুড়া সংবাদ
-            </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          {/* RIGHT TEXT */}
+          <div className="hidden md:block text-right">
 
-            {bankuraNews.map((item: any) => (
-              <Link href={`/article/${item._id}`} key={item._id}>
+            <p className="text-gray-500">
+              আজকের খবর
+            </p>
 
-                <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-2xl transition duration-300 group">
-
-                  <div className="overflow-hidden">
-                    <img
-                      src={item.image}
-                      className="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
-                    />
-                  </div>
-
-                  <div className="p-5">
-
-                    <p className="text-red-600 text-sm font-semibold mb-2">
-                      {item.category}
-                    </p>
-
-                    <h2 className="font-bold text-xl leading-snug group-hover:text-red-700 transition">
-                      {item.title}
-                    </h2>
-
-                    <p className="text-gray-600 mt-3 text-sm">
-                      {item.content?.slice(0, 90)}...
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </Link>
-            ))}
+            <h2 className="text-2xl font-bold text-red-700">
+              বাংলা নিউজ
+            </h2>
 
           </div>
 
         </div>
 
-        {/* 🏛 STATE NEWS */}
-        <div className="mb-14">
+      </div>
 
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-2 h-8 bg-blue-700 rounded"></div>
 
-            <h2 className="text-3xl font-bold">
-              🏛 রাজ্য সংবাদ
-            </h2>
-          </div>
+      {/* 🔥 MENU */}
+      <div className="bg-gray-900 text-white shadow">
 
-          <div className="grid md:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto flex overflow-x-auto">
 
-            {stateNews.map((item: any) => (
-              <Link href={`/article/${item._id}`} key={item._id}>
+          {[
+            "আজকের খবর",
+            "বাঁকুড়া",
+            "রাজ্য",
+            "রাশিফল",
+            "সোনার দাম",
+            "আবহাওয়া",
+            "খেলা",
+            "বিনোদন",
+          ].map((item) => (
 
-                <div className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-2xl transition duration-300 group">
+            <div
+              key={item}
+              className="px-6 py-4 whitespace-nowrap border-r border-gray-700 hover:bg-red-700 transition cursor-pointer font-medium"
+            >
+              {item}
+            </div>
 
-                  <div className="overflow-hidden">
-                    <img
-                      src={item.image}
-                      className="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
-                    />
-                  </div>
-
-                  <div className="p-5">
-
-                    <p className="text-blue-600 text-sm font-semibold mb-2">
-                      {item.category}
-                    </p>
-
-                    <h2 className="font-bold text-xl leading-snug group-hover:text-blue-700 transition">
-                      {item.title}
-                    </h2>
-
-                    <p className="text-gray-600 mt-3 text-sm">
-                      {item.content?.slice(0, 90)}...
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </Link>
-            ))}
-
-          </div>
+          ))}
 
         </div>
 
-        {/* 🔮 RASHIFAL */}
-        <div className="mb-14">
+      </div>
 
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-2 h-8 bg-yellow-500 rounded"></div>
 
-            <h2 className="text-3xl font-bold">
-              🔮 আজকের রাশিফল
-            </h2>
-          </div>
+      {/* 📰 MAIN NEWS SECTION */}
+      <div className="max-w-7xl mx-auto p-4 grid grid-cols-12 gap-6 mt-6">
 
-          <div className="grid md:grid-cols-2 gap-8">
+        {/* 🔥 FEATURED */}
+        <div className="col-span-12 lg:col-span-7">
 
-            {rashifalNews.map((item: any) => (
-              <Link href={`/article/${item._id}`} key={item._id}>
+          {featured && (
 
-                <div className="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition">
+            <Link href={`/article/${featured._id}`}>
 
-                  <h2 className="font-bold text-2xl mb-3">
-                    {item.title}
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
+
+                <img
+                  src={featured.image}
+                  className="w-full h-[500px] object-cover group-hover:scale-105 transition duration-700"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+                <div className="absolute bottom-0 p-8">
+
+                  <span className="bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                    {featured.category}
+                  </span>
+
+                  <h2 className="text-white text-3xl md:text-5xl font-bold leading-tight mt-5 max-w-4xl">
+
+                    {featured.title}
+
                   </h2>
 
-                  <p className="text-gray-700">
-                    {item.content?.slice(0, 180)}...
+                  <p className="text-gray-200 mt-5 text-lg max-w-3xl leading-8">
+
+                    {featured.content?.slice(0, 180)}...
+
                   </p>
 
                 </div>
 
+              </div>
+
+            </Link>
+
+          )}
+
+        </div>
+
+
+        {/* 📰 LATEST NEWS */}
+        <div className="col-span-12 lg:col-span-5">
+
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+
+            <div className="bg-red-700 text-white px-5 py-4 text-2xl font-bold">
+              সর্বশেষ খবর
+            </div>
+
+            {latestNews.map((item: any) => (
+
+              <Link
+                href={`/article/${item._id}`}
+                key={item._id}
+              >
+
+                <div className="flex gap-4 p-4 border-b hover:bg-gray-50 transition group">
+
+                  {/* IMAGE */}
+                  <div className="w-[130px] h-[90px] overflow-hidden rounded-xl flex-shrink-0">
+
+                    <img
+                      src={item.image}
+                      className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                    />
+
+                  </div>
+
+                  {/* TITLE */}
+                  <div>
+
+                    <p className="text-red-700 text-sm font-semibold mb-2">
+                      {item.category}
+                    </p>
+
+                    <h2 className="font-bold text-lg leading-snug group-hover:text-red-700 transition">
+
+                      {item.title}
+
+                    </h2>
+
+                  </div>
+
+                </div>
+
               </Link>
+
             ))}
 
           </div>
 
         </div>
 
-        {/* 🎥 VIDEO SECTION */}
-        {latestMedia && (
-          <div className="mt-16">
+      </div>
+              {/* 🔮 RASHIFAL SECTION */}
+        <div className="max-w-7xl mx-auto px-4 mt-14 mb-20">
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-2 h-8 bg-red-700 rounded"></div>
+          {/* TITLE */}
+          <div className="flex items-center justify-between mb-8">
 
-              <h2 className="text-3xl font-bold">
-                🎥 ভিডিও সংবাদ
+            <div>
+              <h2 className="text-4xl font-extrabold text-gray-900">
+                🔮 আজকের রাশিফল
               </h2>
+
+              <p className="text-gray-500 mt-2">
+                প্রতিদিনের রাশিফল দেখুন
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+          </div>
 
-              {/* YOUTUBE */}
-              {latestMedia.youtubeLink && (
-                <div className="bg-white rounded-2xl p-4 shadow">
+          {/* GRID */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
 
-                  <h3 className="font-bold mb-4 text-xl">
-                    YouTube Video
+            {rashis.map((rashi) => (
+
+              <div
+                key={rashi.name}
+                className="
+                  group
+                  relative
+                  overflow-hidden
+                  rounded-3xl
+                  bg-white/70
+                  backdrop-blur-lg
+                  border border-white/30
+                  shadow-lg
+                  hover:shadow-2xl
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  cursor-pointer
+                "
+              >
+
+                {/* GLOW EFFECT */}
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+
+                <div className="relative p-6 text-center">
+
+                  {/* ICON */}
+                  <div className="
+                    text-6xl
+                    mb-4
+                    transition
+                    duration-500
+                    group-hover:scale-125
+                    group-hover:rotate-12
+                  ">
+                    {rashi.icon}
+                  </div>
+
+                  {/* NAME */}
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    {rashi.name}
                   </h3>
 
-                  <iframe
-                    className="w-full h-[300px] rounded-xl"
-                    src={latestMedia.youtubeLink.replace(
-                      "watch?v=",
-                      "embed/"
-                    )}
-                    allowFullScreen
-                  ></iframe>
+                  {/* BUTTON */}
+                  <button className="
+                    mt-5
+                    bg-red-700
+                    text-white
+                    px-4
+                    py-2
+                    rounded-full
+                    text-sm
+                    font-medium
+                    hover:bg-black
+                    transition
+                  ">
+                    বিস্তারিত দেখুন
+                  </button>
 
                 </div>
-              )}
 
-              {/* FACEBOOK */}
-              {latestMedia.facebookLink && (
-                <div className="bg-white rounded-2xl p-4 shadow">
+              </div>
 
-                  <h3 className="font-bold mb-4 text-xl">
-                    Facebook Video
-                  </h3>
+            ))}
 
-                  <a
-                    href={latestMedia.facebookLink}
-                    target="_blank"
-                    className="block bg-blue-600 text-white text-center py-20 rounded-xl text-2xl font-bold hover:bg-blue-700 transition"
-                  >
-                    ▶ Watch Facebook Video
-                  </a>
+          </div>
+
+        </div>
+                {/* 🌦 WEATHER + GOLD PRICE */}
+        <div className="max-w-7xl mx-auto px-4 mb-20">
+
+          <div className="grid lg:grid-cols-2 gap-8">
+
+            {/* 🌦 WEATHER CARD */}
+            <div className="
+              relative
+              overflow-hidden
+              rounded-3xl
+              bg-gradient-to-br
+              from-sky-500
+              to-blue-700
+              text-white
+              shadow-2xl
+              p-8
+            ">
+
+              {/* BG EFFECT */}
+              <div className="absolute top-0 right-0 text-[180px] opacity-10">
+                ☁
+              </div>
+
+              <div className="relative">
+
+                <p className="text-lg opacity-90">
+                  আজকের আবহাওয়া
+                </p>
+
+                <h2 className="text-4xl font-extrabold mt-2">
+                  বাঁকুড়া
+                </h2>
+
+                <div className="flex items-center gap-6 mt-8">
+
+                  <div className="text-8xl">
+                    🌤
+                  </div>
+
+                  <div>
+
+                    <h1 className="text-7xl font-black">
+                      32°
+                    </h1>
+
+                    <p className="text-xl mt-2">
+                      Partly Cloudy
+                    </p>
+
+                  </div>
 
                 </div>
-              )}
+
+                <div className="grid grid-cols-3 gap-4 mt-10">
+
+                  <div className="bg-white/20 rounded-2xl p-4 text-center backdrop-blur-md">
+
+                    <p className="text-sm opacity-80">
+                      Humidity
+                    </p>
+
+                    <h3 className="text-2xl font-bold mt-2">
+                      68%
+                    </h3>
+
+                  </div>
+
+                  <div className="bg-white/20 rounded-2xl p-4 text-center backdrop-blur-md">
+
+                    <p className="text-sm opacity-80">
+                      Wind
+                    </p>
+
+                    <h3 className="text-2xl font-bold mt-2">
+                      11km/h
+                    </h3>
+
+                  </div>
+
+                  <div className="bg-white/20 rounded-2xl p-4 text-center backdrop-blur-md">
+
+                    <p className="text-sm opacity-80">
+                      Rain
+                    </p>
+
+                    <h3 className="text-2xl font-bold mt-2">
+                      12%
+                    </h3>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* 🪙 GOLD PRICE */}
+            <div className="
+              relative
+              overflow-hidden
+              rounded-3xl
+              bg-gradient-to-br
+              from-yellow-400
+              to-orange-500
+              shadow-2xl
+              p-8
+              text-black
+            ">
+
+              {/* BG EFFECT */}
+              <div className="absolute top-0 right-0 text-[180px] opacity-10">
+                🪙
+              </div>
+
+              <div className="relative">
+
+                <p className="text-lg font-medium">
+                  আজকের সোনার দাম
+                </p>
+
+                <h2 className="text-4xl font-extrabold mt-2">
+                  Gold & Silver Price
+                </h2>
+
+                <div className="space-y-5 mt-10">
+
+                  {/* 24K */}
+                  <div className="
+                    bg-white/40
+                    backdrop-blur-md
+                    rounded-2xl
+                    p-5
+                    flex
+                    items-center
+                    justify-between
+                  ">
+
+                    <div>
+
+                      <p className="text-sm font-medium">
+                        24K Gold
+                      </p>
+
+                      <h3 className="text-3xl font-black mt-1">
+                        ₹9,850
+                      </h3>
+
+                    </div>
+
+                    <div className="text-5xl">
+                      🥇
+                    </div>
+
+                  </div>
+
+
+                  {/* 22K */}
+                  <div className="
+                    bg-white/40
+                    backdrop-blur-md
+                    rounded-2xl
+                    p-5
+                    flex
+                    items-center
+                    justify-between
+                  ">
+
+                    <div>
+
+                      <p className="text-sm font-medium">
+                        22K Gold
+                      </p>
+
+                      <h3 className="text-3xl font-black mt-1">
+                        ₹9,020
+                      </h3>
+
+                    </div>
+
+                    <div className="text-5xl">
+                      🪙
+                    </div>
+
+                  </div>
+
+
+                  {/* SILVER */}
+                  <div className="
+                    bg-white/40
+                    backdrop-blur-md
+                    rounded-2xl
+                    p-5
+                    flex
+                    items-center
+                    justify-between
+                  ">
+
+                    <div>
+
+                      <p className="text-sm font-medium">
+                        Silver
+                      </p>
+
+                      <h3 className="text-3xl font-black mt-1">
+                        ₹114/g
+                      </h3>
+
+                    </div>
+
+                    <div className="text-5xl">
+                      ⚪
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
 
             </div>
 
           </div>
-        )}
 
-      </div>
+        </div>
+        {/* 🏙 BANKURA NEWS */}
+        <div className="max-w-7xl mx-auto px-4 mb-16">
+
+          <div className="flex items-center justify-between mb-8">
+
+            <h2 className="text-4xl font-extrabold text-gray-900">
+              🏙 বাঁকুড়া সংবাদ
+            </h2>
+
+            <button className="text-red-700 font-bold">
+              আরও দেখুন →
+            </button>
+
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            {bankuraNews.slice(0, 4).map((item: any) => (
+
+              <Link
+                href={`/article/${item._id}`}
+                key={item._id}
+              >
+
+                <div className="
+                  bg-white
+                  rounded-3xl
+                  overflow-hidden
+                  shadow-lg
+                  hover:shadow-2xl
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  group
+                ">
+
+                  <div className="overflow-hidden">
+
+                    <img
+                      src={item.image}
+                      className="
+                        w-full
+                        h-[220px]
+                        object-cover
+                        group-hover:scale-110
+                        transition
+                        duration-700
+                      "
+                    />
+
+                  </div>
+
+                  <div className="p-5">
+
+                    <p className="text-red-700 text-sm font-bold mb-3">
+                      {item.category}
+                    </p>
+
+                    <h3 className="
+                      text-xl
+                      font-bold
+                      leading-snug
+                      group-hover:text-red-700
+                      transition
+                    ">
+
+                      {item.title}
+
+                    </h3>
+
+                    <p className="text-gray-600 mt-3 text-sm leading-7">
+
+                      {item.content?.slice(0, 90)}...
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        </div>
+
+
+        {/* 🏛 STATE NEWS */}
+        <div className="max-w-7xl mx-auto px-4 mb-16">
+
+          <div className="flex items-center justify-between mb-8">
+
+            <h2 className="text-4xl font-extrabold text-gray-900">
+              🏛 রাজ্য সংবাদ
+            </h2>
+
+            <button className="text-red-700 font-bold">
+              আরও দেখুন →
+            </button>
+
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            {stateNews.slice(0, 4).map((item: any) => (
+
+              <Link
+                href={`/article/${item._id}`}
+                key={item._id}
+              >
+
+                <div className="
+                  bg-white
+                  rounded-3xl
+                  overflow-hidden
+                  shadow-lg
+                  hover:shadow-2xl
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  group
+                ">
+
+                  <div className="overflow-hidden">
+
+                    <img
+                      src={item.image}
+                      className="
+                        w-full
+                        h-[220px]
+                        object-cover
+                        group-hover:scale-110
+                        transition
+                        duration-700
+                      "
+                    />
+
+                  </div>
+
+                  <div className="p-5">
+
+                    <p className="text-blue-700 text-sm font-bold mb-3">
+                      {item.category}
+                    </p>
+
+                    <h3 className="
+                      text-xl
+                      font-bold
+                      leading-snug
+                      group-hover:text-blue-700
+                      transition
+                    ">
+
+                      {item.title}
+
+                    </h3>
+
+                    <p className="text-gray-600 mt-3 text-sm leading-7">
+
+                      {item.content?.slice(0, 90)}...
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        </div>
+        {/* 🎥 VIDEO NEWS */}
+        <div className="max-w-7xl mx-auto px-4 mb-20">
+
+          <div className="flex items-center justify-between mb-8">
+
+            <h2 className="text-4xl font-extrabold text-gray-900">
+              🎥 ভিডিও সংবাদ
+            </h2>
+
+            <button className="text-red-700 font-bold">
+              আরও ভিডিও →
+            </button>
+
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8">
+
+            {videoNews.slice(0, 2).map((item: any) => (
+
+              <div
+                key={item._id}
+                className="
+                  bg-white
+                  rounded-3xl
+                  overflow-hidden
+                  shadow-xl
+                "
+              >
+
+                {/* VIDEO */}
+                {/* VIDEO THUMBNAIL */}
+                  <a
+                    href={item.video}
+                    target="_blank"
+                  >
+
+                    <div className="relative group cursor-pointer overflow-hidden">
+
+                      <img
+                        src={item.image}
+                        className="
+                          w-full
+                          h-[260px]
+                          object-cover
+                          group-hover:scale-105
+                          transition
+                          duration-500
+                        "
+                      />
+
+                      {/* DARK OVERLAY */}
+                      <div className="absolute inset-0 bg-black/30"></div>
+
+                      {/* PLAY BUTTON */}
+                      <div className="
+                        absolute
+                        inset-0
+                        flex
+                        items-center
+                        justify-center
+                      ">
+
+                        <div className="
+                          w-20
+                          h-20
+                          rounded-full
+                          bg-red-700
+                          flex
+                          items-center
+                          justify-center
+                          text-white
+                          text-4xl
+                          shadow-2xl
+                          group-hover:scale-110
+                          transition
+                        ">
+                          ▶
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </a>
+
+                {/* CONTENT */}
+                <div className="p-6">
+
+                  <p className="text-red-700 font-semibold mb-3">
+                    {item.category}
+                  </p>
+
+                  <h3 className="text-2xl font-bold leading-snug">
+
+                    {item.title}
+
+                  </h3>
+
+                  <p className="text-gray-600 mt-4 leading-7">
+
+                    {item.content?.slice(0, 140)}...
+
+                  </p>
+
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </div>
+        {/* 📱 MOBILE BOTTOM NAV */}
+        <div className="
+          fixed
+          bottom-0
+          left-0
+          right-0
+          bg-white
+          border-t
+          shadow-2xl
+          z-50
+          md:hidden
+        ">
+
+          <div className="grid grid-cols-5 text-center">
+
+            <div className="py-3">
+              <div className="text-2xl">🏠</div>
+              <p className="text-xs mt-1">Home</p>
+            </div>
+
+            <div className="py-3">
+              <div className="text-2xl">📰</div>
+              <p className="text-xs mt-1">News</p>
+            </div>
+
+            <div className="py-3">
+              <div className="text-2xl">🔮</div>
+              <p className="text-xs mt-1">Rashi</p>
+            </div>
+
+            <div className="py-3">
+              <div className="text-2xl">🌤</div>
+              <p className="text-xs mt-1">Weather</p>
+            </div>
+
+            <div className="py-3">
+              <div className="text-2xl">☰</div>
+              <p className="text-xs mt-1">Menu</p>
+            </div>
+
+          </div>
+
+        </div>
+
     </div>
   );
 }

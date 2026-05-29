@@ -1,4 +1,6 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { useState } from "react";
 
@@ -7,6 +9,20 @@ export default function AddArticle() {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [category, setCategory] = useState("Bankura News");
+  const [video, setVideo] = useState("");
+  const router = useRouter();
+
+    useEffect(() => {
+
+      const isAdmin = localStorage.getItem("vob_admin");
+
+      if (!isAdmin) {
+
+        router.push("/admin/login");
+
+      }
+
+    }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -36,6 +52,7 @@ export default function AddArticle() {
         content,
         image: imageUrl,
         category,
+        video,
       }),
     });
 
@@ -94,9 +111,30 @@ export default function AddArticle() {
             setImage(e.target.files?.[0] || null)
           }
         />
+        <input
+          className="border p-3 w-full rounded-xl"
+          placeholder="YouTube Video Link"
+          onChange={(e) => setVideo(e.target.value)}
+        />
 
         <button className="bg-black text-white px-5 py-2 rounded">
           Publish Article
+        </button>
+        <button
+          onClick={() => {
+            localStorage.removeItem("vob_admin");
+            router.push("/admin/login");
+          }}
+          className="
+            bg-black
+            text-white
+            px-5
+            py-2
+            rounded-xl
+            mb-5
+          "
+        >
+          Logout
         </button>
       </form>
     </div>
