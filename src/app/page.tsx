@@ -92,7 +92,14 @@ export default async function Home() {
   const videoNews = Array.isArray(articles)
     ? articles.filter((item: any) => item.video)
     : [];
-  const rashifals = await getRashifal();
+  let rashifals = [];
+
+    try {
+      const res = await getRashifal();
+      rashifals = Array.isArray(res) ? res : [];
+    } catch (err) {
+      rashifals = [];
+    }
   const zodiacMap: any = {
   Aries: { icon: "♈", name: "মেষ" },
   Taurus: { icon: "♉", name: "বৃষ" },
@@ -107,10 +114,31 @@ export default async function Home() {
   Aquarius: { icon: "♒", name: "কুম্ভ" },
   Pisces: { icon: "♓", name: "মীন" },
   };
-  const videos = await getVideos();
-  const weatherData = await getWeather();
+  let videos = [];
+
+    try {
+      const res = await getVideos();
+      videos = Array.isArray(res) ? res : [];
+    } catch (err) {
+      videos = [];
+    }
+  let weatherData = [];
+
+    try {
+      const res = await getWeather();
+      weatherData = Array.isArray(res) ? res : [];
+    } catch (err) {
+      weatherData = [];
+    }
   const weather = Array.isArray(weatherData) ? weatherData[0] : null;
-  const goldPriceData = await getGoldPrice();
+  let goldPriceData = [];
+
+    try {
+      const res = await getGoldPrice();
+      goldPriceData = Array.isArray(res) ? res : [];
+    } catch (err) {
+      goldPriceData = [];
+    }
   const goldPrice = Array.isArray(goldPriceData) ? goldPriceData[0] : null;
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -232,7 +260,7 @@ export default async function Home() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
 
                 <img
-                  src={featured.image}
+                  src={featured?.image}
                   className="w-full h-[500px] object-cover group-hover:scale-105 transition duration-700"
                 />
 
@@ -241,12 +269,12 @@ export default async function Home() {
                 <div className="absolute bottom-0 p-8">
 
                   <span className="bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    {featured.category}
+                    {featured?.category}
                   </span>
 
                   <h2 className="text-white text-3xl md:text-5xl font-bold leading-tight mt-5 max-w-4xl">
 
-                    {featured.title}
+                    {featured?.title}
 
                   </h2>
 
@@ -276,7 +304,8 @@ export default async function Home() {
               সর্বশেষ খবর
             </div>
 
-            {latestNews.map((item: any) => (
+            {latestNews?.length > 0 &&
+              latestNews.map((item: any) => (
 
               <Link
                 href={`/article/${item._id}`}
@@ -699,17 +728,12 @@ export default async function Home() {
 
                   <div className="overflow-hidden">
 
-                    <img
-                      src={item.image}
-                      className="
-                        w-full
-                        h-[220px]
-                        object-cover
-                        group-hover:scale-110
-                        transition
-                        duration-700
-                      "
-                    />
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : null}
 
                   </div>
 
