@@ -61,29 +61,37 @@ async function getVideos() {
 }
 export default async function Home() {
 
-  const articles = await getArticles();
+  let articles = await getArticles();
 
-  const featured = articles[0];
+  if (!Array.isArray(articles)) {
+    articles = [];
+  }
 
-  const latestNews = articles.slice(1, 6);
-  const bankuraNews = articles.filter(
-    (item: any) => item.category === "Bankura News"
-  );
+  const featured = articles.length > 0 ? articles[0] : null;
 
-  const stateNews = articles.filter(
-    (item: any) => item.category === "State News"
-  );
+  const latestNews = Array.isArray(articles)
+    ? articles.slice(1, 6)
+    : [];
 
-  const sportsNews = articles.filter(
-    (item: any) => item.category === "Sports"
-  );
+  const bankuraNews = Array.isArray(articles)
+    ? articles.filter((item: any) => item.category === "Bankura News")
+    : [];
 
-  const entertainmentNews = articles.filter(
-    (item: any) => item.category === "Entertainment"
-  );
-  const videoNews = articles.filter(
-    (item: any) => item.video
-  );
+  const stateNews = Array.isArray(articles)
+    ? articles.filter((item: any) => item.category === "State News")
+    : [];
+
+  const sportsNews = Array.isArray(articles)
+    ? articles.filter((item: any) => item.category === "Sports")
+    : [];
+
+  const entertainmentNews = Array.isArray(articles)
+    ? articles.filter((item: any) => item.category === "Entertainment")
+    : [];
+
+  const videoNews = Array.isArray(articles)
+    ? articles.filter((item: any) => item.video)
+    : [];
   const rashifals = await getRashifal();
   const zodiacMap: any = {
   Aries: { icon: "♈", name: "মেষ" },
@@ -101,9 +109,9 @@ export default async function Home() {
   };
   const videos = await getVideos();
   const weatherData = await getWeather();
-  const weather = weatherData[0];
+  const weather = Array.isArray(weatherData) ? weatherData[0] : null;
   const goldPriceData = await getGoldPrice();
-  const goldPrice = goldPriceData[0];
+  const goldPrice = Array.isArray(goldPriceData) ? goldPriceData[0] : null;
   return (
     <div className="bg-gray-100 min-h-screen">
 
