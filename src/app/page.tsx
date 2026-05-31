@@ -1,13 +1,64 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+
+async function getBaseUrl() {
+  const headersList = await headers();
+  const host = headersList.get("host");
+
+  return `${
+    process.env.NODE_ENV === "development" ? "http" : "https"
+  }://${host}`;
+}
 
 async function getArticles() {
-  const res = await fetch("http://localhost:3001/api/articles", {
+  const baseUrl = await getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/articles`, {
     cache: "no-store",
   });
 
   return res.json();
 }
 
+async function getRashifal() {
+  const baseUrl = await getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/rashifal`, {
+    cache: "no-store",
+  });
+
+  return res.json();
+}
+
+async function getWeather() {
+  const baseUrl = await getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/weather`, {
+    cache: "no-store",
+  });
+
+  return res.json();
+}
+
+async function getGoldPrice() {
+  const baseUrl = await getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/gold-price`, {
+    cache: "no-store",
+  });
+
+  return res.json();
+}
+
+async function getVideos() {
+  const baseUrl = await getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/videos`, {
+    cache: "no-store",
+  });
+
+  return res.json();
+}
 export default async function Home() {
 
   const articles = await getArticles();
@@ -33,21 +84,26 @@ export default async function Home() {
   const videoNews = articles.filter(
     (item: any) => item.video
   );
-  const rashis = [
-  { icon: "♈", name: "মেষ" },
-  { icon: "♉", name: "বৃষ" },
-  { icon: "♊", name: "মিথুন" },
-  { icon: "♋", name: "কর্কট" },
-  { icon: "♌", name: "সিংহ" },
-  { icon: "♍", name: "কন্যা" },
-  { icon: "♎", name: "তুলা" },
-  { icon: "♏", name: "বৃশ্চিক" },
-  { icon: "♐", name: "ধনু" },
-  { icon: "♑", name: "মকর" },
-  { icon: "♒", name: "কুম্ভ" },
-  { icon: "♓", name: "মীন" },
-];
-
+  const rashifals = await getRashifal();
+  const zodiacMap: any = {
+  Aries: { icon: "♈", name: "মেষ" },
+  Taurus: { icon: "♉", name: "বৃষ" },
+  Gemini: { icon: "♊", name: "মিথুন" },
+  Cancer: { icon: "♋", name: "কর্কট" },
+  Leo: { icon: "♌", name: "সিংহ" },
+  Virgo: { icon: "♍", name: "কন্যা" },
+  Libra: { icon: "♎", name: "তুলা" },
+  Scorpio: { icon: "♏", name: "বৃশ্চিক" },
+  Sagittarius: { icon: "♐", name: "ধনু" },
+  Capricorn: { icon: "♑", name: "মকর" },
+  Aquarius: { icon: "♒", name: "কুম্ভ" },
+  Pisces: { icon: "♓", name: "মীন" },
+  };
+  const videos = await getVideos();
+  const weatherData = await getWeather();
+  const weather = weatherData[0];
+  const goldPriceData = await getGoldPrice();
+  const goldPrice = goldPriceData[0];
   return (
     <div className="bg-gray-100 min-h-screen">
 
@@ -60,9 +116,21 @@ export default async function Home() {
             BREAKING
           </span>
 
-          <marquee className="font-medium">
-            🌤 আজকের আবহাওয়া • 🪙 আজকের সোনার দাম • 🔥 Voice Of Bankura Digital News Portal
-          </marquee>
+          <div className="flex-1 overflow-hidden">
+            <div
+              className="font-medium whitespace-nowrap"
+              style={{ display: "inline-block", animation: "vobMarquee 18s linear infinite" }}
+            >
+              🌤 আজকের আবহাওয়া • 🪙 আজকের সোনার দাম • 🔥 Voice Of Bankura Digital News Portal
+            </div>
+
+            <style>{`
+              @keyframes vobMarquee {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
+              }
+            `}</style>
+          </div>
 
         </div>
 
@@ -212,10 +280,16 @@ export default async function Home() {
                   {/* IMAGE */}
                   <div className="w-[130px] h-[90px] overflow-hidden rounded-xl flex-shrink-0">
 
+                    {item.image ? (
                     <img
                       src={item.image}
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                     />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                      No Image
+                    </div>
+                  )}
 
                   </div>
 
@@ -246,182 +320,145 @@ export default async function Home() {
 
       </div>
               {/* 🔮 RASHIFAL SECTION */}
-        <div className="max-w-7xl mx-auto px-4 mt-14 mb-20">
+        {/* 🔮 DAILY RASHIFAL */}
+      <div className="max-w-7xl mx-auto px-4 mb-20">
 
-          {/* TITLE */}
-          <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3 mb-8">
 
-            <div>
-              <h2 className="text-4xl font-extrabold text-gray-900">
-                🔮 আজকের রাশিফল
-              </h2>
+          <div className="w-2 h-10 bg-purple-600 rounded-full"></div>
 
-              <p className="text-gray-500 mt-2">
-                প্রতিদিনের রাশিফল দেখুন
-              </p>
-            </div>
+          <h2 className="text-4xl font-extrabold">
+            🔮 আজকের রাশিফল
+          </h2>
 
-          </div>
+        </div>
 
-          {/* GRID */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
 
-            {rashis.map((rashi) => (
+          {rashifals.slice(0, 12).map((item: any) => (
+            <Link
+              href={`/rashifal/${item._id}`}
+              key={item._id}
+            >
 
-              <div
-                key={rashi.name}
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-3xl
-                  bg-white/70
-                  backdrop-blur-lg
-                  border border-white/30
-                  shadow-lg
-                  hover:shadow-2xl
-                  transition-all
-                  duration-500
-                  hover:-translate-y-2
-                  cursor-pointer
-                "
-              >
+            <div
+              className="
+                bg-white
+                rounded-3xl
+                overflow-hidden
+                shadow-lg
+                hover:shadow-2xl
+                transition-all
+                duration-500
+                hover:-translate-y-2
+                group
+              "
+            >
 
-                {/* GLOW EFFECT */}
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+              <div className="overflow-hidden">
 
-                <div className="relative p-6 text-center">
-
-                  {/* ICON */}
-                  <div className="
-                    text-6xl
-                    mb-4
-                    transition
-                    duration-500
-                    group-hover:scale-125
-                    group-hover:rotate-12
-                  ">
-                    {rashi.icon}
-                  </div>
-
-                  {/* NAME */}
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {rashi.name}
-                  </h3>
-
-                  {/* BUTTON */}
-                  <button className="
-                    mt-5
-                    bg-red-700
-                    text-white
-                    px-4
-                    py-2
-                    rounded-full
-                    text-sm
-                    font-medium
-                    hover:bg-black
-                    transition
-                  ">
-                    বিস্তারিত দেখুন
-                  </button>
-
-                </div>
+                {item.image && (
+                  <img
+                    src={item.image}
+                    className="w-full h-[500px] object-cover rounded-b-3xl"
+                  />
+                )}
 
               </div>
 
-            ))}
+              <div className="p-4 text-center">
 
-          </div>
+                <h3 className="
+                  font-bold
+                  text-lg
+                  group-hover:text-purple-700
+                  transition
+                ">
+                  {zodiacMap[item.zodiac]?.icon}{" "}
+                  {zodiacMap[item.zodiac]?.name}
+                </h3>
+
+              </div>
+
+            </div>
+            </Link>
+
+          ))}
 
         </div>
+
+      </div>
                 {/* 🌦 WEATHER + GOLD PRICE */}
         <div className="max-w-7xl mx-auto px-4 mb-20">
 
           <div className="grid lg:grid-cols-2 gap-8">
 
-            {/* 🌦 WEATHER CARD */}
-            <div className="
-              relative
-              overflow-hidden
-              rounded-3xl
-              bg-gradient-to-br
-              from-sky-500
-              to-blue-700
-              text-white
-              shadow-2xl
-              p-8
-            ">
+            {/* 🌤 WEATHER */}
 
-              {/* BG EFFECT */}
-              <div className="absolute top-0 right-0 text-[180px] opacity-10">
-                ☁
-              </div>
+            {weather && (
 
-              <div className="relative">
+            <div className="max-w-7xl mx-auto px-4 mb-20">
 
-                <p className="text-lg opacity-90">
-                  আজকের আবহাওয়া
-                </p>
+              <div className="flex items-center gap-3 mb-8">
 
-                <h2 className="text-4xl font-extrabold mt-2">
-                  বাঁকুড়া
+                <div className="w-2 h-10 bg-sky-500 rounded-full"></div>
+
+                <h2 className="text-4xl font-extrabold">
+                  🌤 আজকের আবহাওয়া
                 </h2>
 
-                <div className="flex items-center gap-6 mt-8">
+              </div>
 
-                  <div className="text-8xl">
-                    🌤
+              <div className="
+                bg-gradient-to-r
+                from-sky-500
+                to-blue-700
+                text-white
+                rounded-3xl
+                overflow-hidden
+                shadow-2xl
+              ">
+
+                <div className="grid md:grid-cols-2">
+
+                  <div className="p-8">
+
+                    <p className="text-xl mb-2">
+                      📍 {weather.city}
+                    </p>
+
+                    <h3 className="text-7xl font-bold mb-4">
+                      {weather.temperature}
+                    </h3>
+
+                    <p className="text-2xl mb-6">
+                      {weather.condition}
+                    </p>
+
+                    <div className="space-y-2 text-lg">
+
+                      <p>
+                        💧 Humidity: {weather.humidity}
+                      </p>
+
+                      <p>
+                        🌬 Wind: {weather.wind}
+                      </p>
+
+                    </div>
+
                   </div>
 
                   <div>
 
-                    <h1 className="text-7xl font-black">
-                      32°
-                    </h1>
-
-                    <p className="text-xl mt-2">
-                      Partly Cloudy
-                    </p>
-
-                  </div>
-
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 mt-10">
-
-                  <div className="bg-white/20 rounded-2xl p-4 text-center backdrop-blur-md">
-
-                    <p className="text-sm opacity-80">
-                      Humidity
-                    </p>
-
-                    <h3 className="text-2xl font-bold mt-2">
-                      68%
-                    </h3>
-
-                  </div>
-
-                  <div className="bg-white/20 rounded-2xl p-4 text-center backdrop-blur-md">
-
-                    <p className="text-sm opacity-80">
-                      Wind
-                    </p>
-
-                    <h3 className="text-2xl font-bold mt-2">
-                      11km/h
-                    </h3>
-
-                  </div>
-
-                  <div className="bg-white/20 rounded-2xl p-4 text-center backdrop-blur-md">
-
-                    <p className="text-sm opacity-80">
-                      Rain
-                    </p>
-
-                    <h3 className="text-2xl font-bold mt-2">
-                      12%
-                    </h3>
+                    <img
+                      src={weather.image}
+                      className="
+                        w-full
+                        h-full
+                        object-cover
+                      "
+                    />
 
                   </div>
 
@@ -430,124 +467,89 @@ export default async function Home() {
               </div>
 
             </div>
+
+            )}
 
 
             {/* 🪙 GOLD PRICE */}
-            <div className="
-              relative
-              overflow-hidden
-              rounded-3xl
-              bg-gradient-to-br
-              from-yellow-400
-              to-orange-500
-              shadow-2xl
-              p-8
-              text-black
-            ">
+            {/* 🥇 GOLD PRICE */}
 
-              {/* BG EFFECT */}
-              <div className="absolute top-0 right-0 text-[180px] opacity-10">
-                🪙
-              </div>
+            {goldPrice && (
 
-              <div className="relative">
+            <div className="max-w-7xl mx-auto px-4 mb-20">
 
-                <p className="text-lg font-medium">
-                  আজকের সোনার দাম
-                </p>
+              <div className="flex items-center gap-3 mb-8">
 
-                <h2 className="text-4xl font-extrabold mt-2">
-                  Gold & Silver Price
+                <div className="w-2 h-10 bg-yellow-500 rounded-full"></div>
+
+                <h2 className="text-4xl font-extrabold">
+                  🥇 আজকের সোনা ও রূপার দাম
                 </h2>
 
-                <div className="space-y-5 mt-10">
+              </div>
 
-                  {/* 24K */}
-                  <div className="
-                    bg-white/40
-                    backdrop-blur-md
-                    rounded-2xl
-                    p-5
-                    flex
-                    items-center
-                    justify-between
-                  ">
+              <div className="
+                bg-gradient-to-r
+                from-yellow-400
+                via-yellow-500
+                to-amber-600
+                rounded-3xl
+                shadow-2xl
+                overflow-hidden
+              ">
 
-                    <div>
+                <div className="
+                  grid
+                  md:grid-cols-3
+                  text-center
+                  text-white
+                ">
 
-                      <p className="text-sm font-medium">
-                        24K Gold
-                      </p>
+                  <div className="p-8">
 
-                      <h3 className="text-3xl font-black mt-1">
-                        ₹9,850
-                      </h3>
-
+                    <div className="text-5xl mb-3">
+                      🏅
                     </div>
 
-                    <div className="text-5xl">
+                    <h3 className="font-bold text-2xl">
+                      ২৪ ক্যারেট
+                    </h3>
+
+                    <p className="text-3xl mt-3 font-bold">
+                      {goldPrice.gold24k}
+                    </p>
+
+                  </div>
+
+                  <div className="p-8 border-y md:border-y-0 md:border-x border-white/30">
+
+                    <div className="text-5xl mb-3">
                       🥇
                     </div>
 
-                  </div>
+                    <h3 className="font-bold text-2xl">
+                      ২২ ক্যারেট
+                    </h3>
 
-
-                  {/* 22K */}
-                  <div className="
-                    bg-white/40
-                    backdrop-blur-md
-                    rounded-2xl
-                    p-5
-                    flex
-                    items-center
-                    justify-between
-                  ">
-
-                    <div>
-
-                      <p className="text-sm font-medium">
-                        22K Gold
-                      </p>
-
-                      <h3 className="text-3xl font-black mt-1">
-                        ₹9,020
-                      </h3>
-
-                    </div>
-
-                    <div className="text-5xl">
-                      🪙
-                    </div>
+                    <p className="text-3xl mt-3 font-bold">
+                      {goldPrice.gold22k}
+                    </p>
 
                   </div>
 
+                  <div className="p-8">
 
-                  {/* SILVER */}
-                  <div className="
-                    bg-white/40
-                    backdrop-blur-md
-                    rounded-2xl
-                    p-5
-                    flex
-                    items-center
-                    justify-between
-                  ">
-
-                    <div>
-
-                      <p className="text-sm font-medium">
-                        Silver
-                      </p>
-
-                      <h3 className="text-3xl font-black mt-1">
-                        ₹114/g
-                      </h3>
-
-                    </div>
-
-                    <div className="text-5xl">
+                    <div className="text-5xl mb-3">
                       ⚪
                     </div>
+
+                    <h3 className="font-bold text-2xl">
+                      রূপা
+                    </h3>
+
+                    <p className="text-3xl mt-3 font-bold">
+                      {goldPrice.silver}
+                    </p>
 
                   </div>
 
@@ -556,6 +558,8 @@ export default async function Home() {
               </div>
 
             </div>
+
+            )}
 
           </div>
 
@@ -737,112 +741,98 @@ export default async function Home() {
 
         </div>
         {/* 🎥 VIDEO NEWS */}
+        {/* 📺 VIDEO NEWS */}
+
         <div className="max-w-7xl mx-auto px-4 mb-20">
 
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3 mb-8">
 
-            <h2 className="text-4xl font-extrabold text-gray-900">
-              🎥 ভিডিও সংবাদ
+            <div className="w-2 h-10 bg-red-600 rounded-full"></div>
+
+            <h2 className="text-4xl font-extrabold">
+              📺 ভিডিও সংবাদ
             </h2>
-
-            <button className="text-red-700 font-bold">
-              আরও ভিডিও →
-            </button>
 
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
 
-            {videoNews.slice(0, 2).map((item: any) => (
+            {videos.slice(0, 6).map((item: any) => (
 
-              <div
+              <a
+                href={item.videoUrl}
+                target="_blank"
                 key={item._id}
-                className="
+              >
+
+                <div className="
                   bg-white
                   rounded-3xl
                   overflow-hidden
-                  shadow-xl
-                "
-              >
+                  shadow-lg
+                  hover:shadow-2xl
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  group
+                ">
 
-                {/* VIDEO */}
-                {/* VIDEO THUMBNAIL */}
-                  <a
-                    href={item.video}
-                    target="_blank"
-                  >
+                  <div className="relative">
 
-                    <div className="relative group cursor-pointer overflow-hidden">
+                    <img
+                      src={item.thumbnail}
+                      className="
+                        w-full
+                        h-56
+                        object-cover
+                        group-hover:scale-105
+                        transition
+                        duration-500
+                      "
+                    />
 
-                      <img
-                        src={item.image}
-                        className="
-                          w-full
-                          h-[260px]
-                          object-cover
-                          group-hover:scale-105
-                          transition
-                          duration-500
-                        "
-                      />
+                    <div className="
+                      absolute
+                      inset-0
+                      flex
+                      items-center
+                      justify-center
+                    ">
 
-                      {/* DARK OVERLAY */}
-                      <div className="absolute inset-0 bg-black/30"></div>
-
-                      {/* PLAY BUTTON */}
                       <div className="
-                        absolute
-                        inset-0
+                        bg-red-600
+                        text-white
+                        w-16
+                        h-16
+                        rounded-full
                         flex
                         items-center
                         justify-center
+                        text-3xl
+                        shadow-xl
                       ">
-
-                        <div className="
-                          w-20
-                          h-20
-                          rounded-full
-                          bg-red-700
-                          flex
-                          items-center
-                          justify-center
-                          text-white
-                          text-4xl
-                          shadow-2xl
-                          group-hover:scale-110
-                          transition
-                        ">
-                          ▶
-                        </div>
-
+                        ▶
                       </div>
 
                     </div>
 
-                  </a>
+                  </div>
 
-                {/* CONTENT */}
-                <div className="p-6">
+                  <div className="p-5">
 
-                  <p className="text-red-700 font-semibold mb-3">
-                    {item.category}
-                  </p>
+                    <h3 className="
+                      font-bold
+                      text-lg
+                      leading-snug
+                    ">
+                      {item.title}
+                    </h3>
 
-                  <h3 className="text-2xl font-bold leading-snug">
-
-                    {item.title}
-
-                  </h3>
-
-                  <p className="text-gray-600 mt-4 leading-7">
-
-                    {item.content?.slice(0, 140)}...
-
-                  </p>
+                  </div>
 
                 </div>
 
-              </div>
+              </a>
 
             ))}
 

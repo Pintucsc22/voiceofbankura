@@ -21,7 +21,7 @@ export default function AdminLogin() {
 
       localStorage.setItem("vob_admin", "true");
 
-      router.push("/admin/add-article");
+      router.push("/admin");
 
     } else {
 
