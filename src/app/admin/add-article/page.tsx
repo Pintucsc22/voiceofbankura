@@ -1,34 +1,78 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { useState } from "react";
 
 export default function AddArticle() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [category, setCategory] = useState("Bankura News");
+  const [video, setVideo] = useState("");
+  const router = useRouter();
+
+    useEffect(() => {
+
+      const isAdmin = localStorage.getItem("vob_admin");
+
+      if (!isAdmin) {
+
+        router.push("/admin/login");
+
+      }
+
+    }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    let imageUrl = "";
+
+    // upload image first
+    if (image) {
+      const formData = new FormData();
+      formData.append("file", image);
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const uploadData = await uploadRes.json();
+
+      imageUrl = uploadData.imageUrl;
+    }
+
+    // save article
     await fetch("/api/articles", {
       method: "POST",
-      body: JSON.stringify({ title, content, image }),
+      body: JSON.stringify({
+        title,
+        content,
+        image: imageUrl,
+        category,
+        video,
+      }),
     });
 
     alert("Article Added!");
 
-    // clear form
     setTitle("");
     setContent("");
-    setImage("");
   };
 
   return (
-    <div className="p-5">
-      <h1 className="text-2xl font-bold">Add Article</h1>
+    <div className="p-5 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-5">
+        Add Article
+      </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-        
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+      >
+
         {/* Title */}
         <input
           className="border p-2 w-full"
@@ -39,22 +83,58 @@ export default function AddArticle() {
 
         {/* Content */}
         <textarea
-          className="border p-2 w-full"
+          className="border p-2 w-full h-40"
           placeholder="Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-
-        {/* Image */}
-        <input
+        <select
           className="border p-2 w-full"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+
+          <option>Bankura News</option>
+          <option>State News</option>
+          <option>Rashifal</option>
+          <option>Weather</option>
+          <option>Gold Price</option>
+          <option>Sports</option>
+          <option>Entertainment</option>
+
+        </select>
+
+        {/* Image Upload */}
+        <input
+          type="file"
+          onChange={(e) =>
+            setImage(e.target.files?.[0] || null)
+          }
+        />
+        <input
+          className="border p-3 w-full rounded-xl"
+          placeholder="YouTube Video Link"
+          onChange={(e) => setVideo(e.target.value)}
         />
 
-        <button className="bg-black text-white p-2">
-          Submit
+        <button className="bg-black text-white px-5 py-2 rounded">
+          Publish Article
+        </button>
+        <button
+          onClick={() => {
+            localStorage.removeItem("vob_admin");
+            router.push("/admin/login");
+          }}
+          className="
+            bg-black
+            text-white
+            px-5
+            py-2
+            rounded-xl
+            mb-5
+          "
+        >
+          Logout
         </button>
       </form>
     </div>
