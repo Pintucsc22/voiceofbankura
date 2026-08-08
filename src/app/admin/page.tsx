@@ -42,6 +42,31 @@ export default function AdminDashboard() {
       link: "/admin/gold-price",
       color: "bg-yellow-500",
     },
+    {
+      title: "🗑 Manage News",
+      link: "/admin/manage-news",
+      color: "bg-red-800",
+    },
+    {
+      title: "🗑 Manage Videos",
+      link: "/admin/manage-videos",
+      color: "bg-blue-800",
+    },
+    {
+      title: "🗑 Manage Rashifal",
+      link: "/admin/manage-rashifal",
+      color: "bg-purple-800",
+    },
+    {
+      title: "🗑 Manage Weather",
+      link: "/admin/manage-weather",
+      color: "bg-sky-800",
+    },
+    {
+      title: "🗑 Manage Gold Price",
+      link: "/admin/manage-gold-price",
+      color: "bg-yellow-700",
+    },
   ];
 
   return (

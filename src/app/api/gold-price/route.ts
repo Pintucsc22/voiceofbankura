@@ -40,3 +40,15 @@ export async function POST(req: Request) {
 
   return Response.json(price);
 }
+// DELETE
+export async function DELETE(req: Request) {
+  const { id } = await req.json();
+
+  await connectDB();
+
+  await GoldPrice.findByIdAndDelete(id);
+
+  return Response.json({
+    success: true,
+  });
+}

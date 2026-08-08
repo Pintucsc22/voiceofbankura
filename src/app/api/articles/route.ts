@@ -46,3 +46,15 @@ export async function POST(req: Request) {
 
   return Response.json(article);
 }
+// DELETE
+export async function DELETE(req: Request) {
+  const { id } = await req.json();
+
+  await connectDB();
+
+  await Article.findByIdAndDelete(id);
+
+  return Response.json({
+    success: true,
+  });
+}
