@@ -92,28 +92,7 @@ export default async function Home() {
   const videoNews = Array.isArray(articles)
     ? articles.filter((item: any) => item.video)
     : [];
-  let rashifals = [];
-
-    try {
-      const res = await getRashifal();
-      rashifals = Array.isArray(res) ? res : [];
-    } catch (err) {
-      rashifals = [];
-    }
-  const zodiacMap: any = {
-  Aries: { icon: "♈", name: "মেষ" },
-  Taurus: { icon: "♉", name: "বৃষ" },
-  Gemini: { icon: "♊", name: "মিথুন" },
-  Cancer: { icon: "♋", name: "কর্কট" },
-  Leo: { icon: "♌", name: "সিংহ" },
-  Virgo: { icon: "♍", name: "কন্যা" },
-  Libra: { icon: "♎", name: "তুলা" },
-  Scorpio: { icon: "♏", name: "বৃশ্চিক" },
-  Sagittarius: { icon: "♐", name: "ধনু" },
-  Capricorn: { icon: "♑", name: "মকর" },
-  Aquarius: { icon: "♒", name: "কুম্ভ" },
-  Pisces: { icon: "♓", name: "মীন" },
-  };
+  
   let videos = [];
 
     try {
@@ -356,75 +335,7 @@ export default async function Home() {
         </div>
 
       </div>
-              {/* 🔮 RASHIFAL SECTION */}
-        {/* 🔮 DAILY RASHIFAL */}
-      <div className="max-w-7xl mx-auto px-4 mb-20">
-
-        <div className="flex items-center gap-3 mb-8">
-
-          <div className="w-2 h-10 bg-purple-600 rounded-full"></div>
-
-          <h2 className="text-4xl font-extrabold">
-            🔮 আজকের রাশিফল
-          </h2>
-
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-
-          {rashifals.slice(0, 12).map((item: any) => (
-            <Link
-              href={`/rashifal/${item._id}`}
-              key={item._id}
-            >
-
-            <div
-              className="
-                bg-white
-                rounded-3xl
-                overflow-hidden
-                shadow-lg
-                hover:shadow-2xl
-                transition-all
-                duration-500
-                hover:-translate-y-2
-                group
-              "
-            >
-
-              <div className="overflow-hidden">
-
-                {item.image && (
-                  <img
-                    src={item.image}
-                    className="w-full h-[500px] object-cover rounded-b-3xl"
-                  />
-                )}
-
-              </div>
-
-              <div className="p-4 text-center">
-
-                <h3 className="
-                  font-bold
-                  text-lg
-                  group-hover:text-purple-700
-                  transition
-                ">
-                  {zodiacMap[item.zodiac]?.icon}{" "}
-                  {zodiacMap[item.zodiac]?.name}
-                </h3>
-
-              </div>
-
-            </div>
-            </Link>
-
-          ))}
-
-        </div>
-
-      </div>
+              
                 {/* 🌦 WEATHER + GOLD PRICE */}
         <div className="max-w-7xl mx-auto px-4 mb-20">
 
@@ -639,18 +550,24 @@ export default async function Home() {
 
                   <div className="overflow-hidden">
 
-                    <img
-                      src={item.image}
-                      className="
-                        w-full
-                        h-[220px]
-                        object-cover
-                        group-hover:scale-110
-                        transition
-                        duration-700
-                      "
-                    />
-
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title || "News Image"}
+                        className="
+                          w-full
+                          h-full
+                          object-cover
+                          group-hover:scale-110
+                          transition
+                          duration-500
+                        "
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                        No Image
+                      </div>
+                    )}
                   </div>
 
                   <div className="p-5">
@@ -811,17 +728,24 @@ export default async function Home() {
 
                   <div className="relative">
 
-                    <img
-                      src={item.thumbnail}
-                      className="
-                        w-full
-                        h-56
-                        object-cover
-                        group-hover:scale-105
-                        transition
-                        duration-500
-                      "
-                    />
+                    {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.title || "News Image"}
+                          className="
+                            w-full
+                            h-full
+                            object-cover
+                            group-hover:scale-110
+                            transition
+                            duration-500
+                          "
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                          No Image
+                        </div>
+                      )}
 
                     <div className="
                       absolute
