@@ -201,11 +201,11 @@ rashifalData.forEach((item) => {
   }
 
   const existingDate = new Date(
-    existing.date || existing.createdAt || 0
+    existing.date || 0
   ).getTime();
 
   const currentDate = new Date(
-    item.date || item.createdAt || 0
+    item.date || 0
   ).getTime();
 
   if (currentDate > existingDate) {
