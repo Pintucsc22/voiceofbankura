@@ -28,17 +28,40 @@ export async function GET() {
 
 // POST
 export async function POST(req: Request) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
 
-  await connectDB();
+    await connectDB();
 
-  const rashifal = await Rashifal.create({
-    zodiac: body.zodiac,
-    image: body.image,
-    content: body.content,
-  });
+    const existing = await Rashifal.findOne({
+      zodiac: body.zodiac,
+    }).sort({ date: -1, _id: -1 });
 
-  return Response.json(rashifal);
+    if (existing) {
+      existing.content = body.content;
+      existing.date = new Date();
+
+      await existing.save();
+
+      return Response.json(existing);
+    }
+
+    const rashifal = await Rashifal.create({
+      zodiac: body.zodiac,
+      content: body.content,
+      image: "",
+      date: new Date(),
+    });
+
+    return Response.json(rashifal);
+  } catch (error) {
+    console.error(error);
+
+    return Response.json(
+      { error: "Failed to save Rashifal" },
+      { status: 500 }
+    );
+  }
 }
 // DELETE
 export async function DELETE(req: Request) {
@@ -51,4 +74,38 @@ export async function DELETE(req: Request) {
   return Response.json({
     success: true,
   });
+}
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+
+    await connectDB();
+
+    const updated = await Rashifal.findByIdAndUpdate(
+      body.id,
+      {
+        zodiac: body.zodiac,
+        content: body.content,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updated) {
+      return Response.json(
+        { error: "Rashifal not found" },
+        { status: 404 }
+      );
+    }
+
+    return Response.json(updated);
+  } catch (error) {
+    console.error(error);
+
+    return Response.json(
+      { error: "Failed to update Rashifal" },
+      { status: 500 }
+    );
+  }
 }
