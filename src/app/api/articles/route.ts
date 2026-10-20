@@ -20,12 +20,30 @@ const Article =
   mongoose.models.Article || mongoose.model("Article", ArticleSchema);
 
 // 👉 GET (fetch articles)
-export async function GET() {
-  await connectDB();
+export async function GET(req: Request) {
+  try {
+    await connectDB();
 
-  const articles = await Article.find().sort({ _id: -1 });
+    const { searchParams } = new URL(req.url);
+    const category = searchParams.get("category");
 
-  return Response.json(articles);
+    const filter = category
+      ? { category }
+      : {};
+
+    const articles = await Article.find(filter).sort({
+      _id: -1,
+    });
+
+    return Response.json(articles);
+  } catch (error) {
+    console.error(error);
+
+    return Response.json(
+      { error: "Failed to fetch articles" },
+      { status: 500 }
+    );
+  }
 }
 
 // 👉 POST (save article)

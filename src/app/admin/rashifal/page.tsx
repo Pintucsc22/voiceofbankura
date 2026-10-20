@@ -23,6 +23,7 @@ export default function RashifalPage() {
 
   const [zodiac, setZodiac] = useState("Aries");
   const [content, setContent] = useState("");
+  const [bengaliDate, setBengaliDate] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -33,8 +34,15 @@ export default function RashifalPage() {
     }
   }, [router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
+
+    if (!bengaliDate.trim()) {
+      alert("বাংলা তারিখ লিখুন");
+      return;
+    }
 
     if (!content.trim()) {
       alert("রাশিফলের লেখা লিখুন");
@@ -52,19 +60,24 @@ export default function RashifalPage() {
         body: JSON.stringify({
           zodiac,
           content: content.trim(),
+          bengaliDate: bengaliDate.trim(),
         }),
       });
 
       if (!res.ok) {
-        throw new Error("Failed to save Rashifal");
+        const errorData = await res.json().catch(() => null);
+        throw new Error(
+          errorData?.error || "Failed to save Rashifal"
+        );
       }
 
       alert(`${zodiacNames[zodiac]} রাশিফল সংরক্ষণ হয়েছে`);
 
       setContent("");
+      setBengaliDate("");
     } catch (error) {
-      console.error(error);
-      alert("রাশিফল সংরক্ষণ করা যায়নি");
+      console.error("Rashifal save error:", error);
+      alert("রাশিফল সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setSaving(false);
     }
@@ -89,9 +102,9 @@ export default function RashifalPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl bg-white p-6 shadow-sm border"
+          className="rounded-2xl border bg-white p-6 shadow-sm"
         >
-          {/* Zodiac */}
+          {/* Zodiac selection */}
           <div className="mb-5">
             <label className="mb-2 block font-semibold text-gray-800">
               রাশি নির্বাচন করুন
@@ -101,6 +114,7 @@ export default function RashifalPage() {
               className="w-full rounded-xl border border-gray-300 bg-white p-3 outline-none focus:border-purple-500"
               value={zodiac}
               onChange={(e) => setZodiac(e.target.value)}
+              required
             >
               {Object.entries(zodiacNames).map(
                 ([english, bengali]) => (
@@ -112,7 +126,27 @@ export default function RashifalPage() {
             </select>
           </div>
 
-          {/* Prediction */}
+          {/* Bengali date */}
+          <div className="mb-5">
+            <label className="mb-2 block font-semibold text-gray-800">
+              বাংলা তারিখ (বেনীমাধব শীলের পঞ্জিকা)
+            </label>
+
+            <input
+              type="text"
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-purple-500"
+              placeholder="যেমন: ৪ কার্তিক ১৪৩৩ বঙ্গাব্দ"
+              value={bengaliDate}
+              onChange={(e) => setBengaliDate(e.target.value)}
+              required
+            />
+
+            <p className="mt-2 text-xs text-gray-500">
+              পঞ্জিকা দেখে সঠিক বাংলা তারিখ লিখুন।
+            </p>
+          </div>
+
+          {/* Rashifal content */}
           <div className="mb-5">
             <label className="mb-2 block font-semibold text-gray-800">
               আজকের রাশিফল
@@ -123,20 +157,23 @@ export default function RashifalPage() {
               placeholder="আজকের রাশিফল এখানে লিখুন..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              required
             />
 
-            <p className="mt-2 text-xs text-gray-400">
-              বাংলা ভাষায় বিস্তারিত ভবিষ্যৎবাণী লিখতে পারেন।
+            <p className="mt-2 text-xs text-gray-500">
+              বাংলা ভাষায় বিস্তারিত ভবিষ্যৎবাণী লিখুন।
             </p>
           </div>
 
-          {/* Save */}
+          {/* Save button */}
           <button
             type="submit"
             disabled={saving}
             className="w-full rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving ? "সংরক্ষণ হচ্ছে..." : "রাশিফল সংরক্ষণ করুন"}
+            {saving
+              ? "সংরক্ষণ হচ্ছে..."
+              : "রাশিফল সংরক্ষণ করুন"}
           </button>
         </form>
       </div>

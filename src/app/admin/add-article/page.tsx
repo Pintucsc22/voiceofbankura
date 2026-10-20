@@ -1,142 +1,245 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AddArticle() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [category, setCategory] = useState("Bankura News");
+
+  // Category
+  const [category, setCategory] = useState("Bankura");
+
+  // YouTube
   const [video, setVideo] = useState("");
+
+  const [saving, setSaving] = useState(false);
+
   const router = useRouter();
 
-    useEffect(() => {
+  useEffect(() => {
+    const isAdmin = localStorage.getItem("vob_admin");
 
-      const isAdmin = localStorage.getItem("vob_admin");
+    if (!isAdmin) {
+      router.push("/admin/login");
+    }
+  }, [router]);
 
-      if (!isAdmin) {
-
-        router.push("/admin/login");
-
-      }
-
-    }, []);
-
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let imageUrl = "";
-
-    // upload image first
-    if (image) {
-      const formData = new FormData();
-      formData.append("file", image);
-
-      const uploadRes = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const uploadData = await uploadRes.json();
-
-      imageUrl = uploadData.imageUrl;
+    if (!title.trim()) {
+      alert("শিরোনাম লিখুন");
+      return;
     }
 
-    // save article
-    await fetch("/api/articles", {
-      method: "POST",
-      body: JSON.stringify({
-        title,
-        content,
-        image: imageUrl,
-        category,
-        video,
-      }),
-    });
+    if (!content.trim()) {
+      alert("খবরের বিস্তারিত লিখুন");
+      return;
+    }
 
-    alert("Article Added!");
+    setSaving(true);
 
-    setTitle("");
-    setContent("");
+    try {
+      let imageUrl = "";
+
+      // =========================
+      // IMAGE UPLOAD
+      // =========================
+      if (image) {
+        const formData = new FormData();
+        formData.append("file", image);
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Image upload failed");
+        }
+
+        const uploadData = await uploadRes.json();
+
+        imageUrl = uploadData.imageUrl || "";
+      }
+
+      // =========================
+      // SAVE ARTICLE
+      // =========================
+      const articleRes = await fetch("/api/articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title.trim(),
+          content: content.trim(),
+          image: imageUrl,
+          category,
+          video: video.trim(),
+        }),
+      });
+
+      if (!articleRes.ok) {
+        throw new Error("Article save failed");
+      }
+
+      alert("খবর সফলভাবে প্রকাশ হয়েছে");
+
+      // Reset
+      setTitle("");
+      setContent("");
+      setImage(null);
+      setCategory("Bankura");
+      setVideo("");
+    } catch (error) {
+      console.error(error);
+      alert("খবর প্রকাশ করা যায়নি");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="p-5 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-5">
-        Add Article
-      </h1>
+    <div className="min-h-screen bg-gray-50 p-5">
+      <div className="mx-auto max-w-2xl">
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4"
-      >
+        {/* HEADER */}
+        <div className="mb-6">
+          <p className="text-sm font-bold text-red-600">
+            VOICE OF BANKURA
+          </p>
 
-        {/* Title */}
-        <input
-          className="border p-2 w-full"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+          <h1 className="mt-1 text-3xl font-bold text-gray-900">
+            নতুন খবর প্রকাশ করুন
+          </h1>
 
-        {/* Content */}
-        <textarea
-          className="border p-2 w-full h-40"
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <select
-          className="border p-2 w-full"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          <p className="mt-2 text-gray-500">
+            খবরের তথ্য পূরণ করে প্রকাশ করুন
+          </p>
+        </div>
+
+        {/* FORM */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 rounded-2xl border bg-white p-6 shadow-sm"
         >
 
-          <option>Bankura News</option>
-          <option>State News</option>
-          <option>Rashifal</option>
-          <option>Weather</option>
-          <option>Gold Price</option>
-          <option>Sports</option>
-          <option>Entertainment</option>
+          {/* TITLE */}
+          <div>
+            <label className="mb-2 block font-semibold text-gray-800">
+              খবরের শিরোনাম
+            </label>
 
-        </select>
+            <input
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-red-500"
+              placeholder="খবরের শিরোনাম লিখুন"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
 
-        {/* Image Upload */}
-        <input
-          type="file"
-          onChange={(e) =>
-            setImage(e.target.files?.[0] || null)
-          }
-        />
-        <input
-          className="border p-3 w-full rounded-xl"
-          placeholder="YouTube Video Link"
-          onChange={(e) => setVideo(e.target.value)}
-        />
+          {/* CATEGORY */}
+          <div>
+            <label className="mb-2 block font-semibold text-gray-800">
+              খবরের বিভাগ
+            </label>
 
-        <button className="bg-black text-white px-5 py-2 rounded">
-          Publish Article
-        </button>
-        <button
-          onClick={() => {
-            localStorage.removeItem("vob_admin");
-            router.push("/admin/login");
-          }}
-          className="
-            bg-black
-            text-white
-            px-5
-            py-2
-            rounded-xl
-            mb-5
-          "
-        >
-          Logout
-        </button>
-      </form>
+            <select
+              className="w-full rounded-xl border border-gray-300 bg-white p-3 outline-none focus:border-red-500"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="Bankura">
+                বাঁকুড়া
+              </option>
+
+              <option value="State">
+                রাজ্য
+              </option>
+            </select>
+          </div>
+
+          {/* CONTENT */}
+          <div>
+            <label className="mb-2 block font-semibold text-gray-800">
+              খবরের বিস্তারিত
+            </label>
+
+            <textarea
+              className="min-h-[220px] w-full resize-y rounded-xl border border-gray-300 p-4 leading-7 outline-none focus:border-red-500"
+              placeholder="খবরের বিস্তারিত লিখুন..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </div>
+
+          {/* IMAGE */}
+          <div>
+            <label className="mb-2 block font-semibold text-gray-800">
+              খবরের ছবি
+            </label>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setImage(e.target.files?.[0] || null)
+              }
+              className="w-full rounded-xl border border-gray-300 p-3"
+            />
+
+            {image && (
+              <p className="mt-2 text-sm text-gray-500">
+                নির্বাচিত ছবি: {image.name}
+              </p>
+            )}
+          </div>
+
+          {/* YOUTUBE */}
+          <div>
+            <label className="mb-2 block font-semibold text-gray-800">
+              YouTube ভিডিও লিংক
+            </label>
+
+            <input
+              className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-red-500"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={video}
+              onChange={(e) => setVideo(e.target.value)}
+            />
+
+            <p className="mt-2 text-xs text-gray-400">
+              ভিডিও না থাকলে এই ঘরটি খালি রাখতে পারেন।
+            </p>
+          </div>
+
+          {/* PUBLISH */}
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full rounded-xl bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {saving
+              ? "প্রকাশ হচ্ছে..."
+              : "খবর প্রকাশ করুন"}
+          </button>
+
+          {/* LOGOUT */}
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.removeItem("vob_admin");
+              router.push("/admin/login");
+            }}
+            className="w-full rounded-xl border border-gray-300 px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-100"
+          >
+            Logout
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

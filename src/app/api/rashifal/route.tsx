@@ -1,3 +1,4 @@
+
 import { connectDB } from "../../../lib/db";
 import mongoose from "mongoose";
 
@@ -9,27 +10,55 @@ const RashifalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  bengaliDate: {
+    type: String,
+    default: "",
+  },
 });
 
-const Rashifal =
-  mongoose.models.Rashifal ||
-  mongoose.model("Rashifal", RashifalSchema);
+// Reuse the model only if its schema includes bengaliDate.
+const cachedRashifal = mongoose.models.Rashifal;
 
+  if (
+    cachedRashifal &&
+    !cachedRashifal.schema.path("bengaliDate")
+  ) {
+    delete mongoose.models.Rashifal;
+  }
+
+  const Rashifal =
+    mongoose.models.Rashifal ||
+    mongoose.model("Rashifal", RashifalSchema);
 // GET
 export async function GET() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const rashifals = await Rashifal.find().sort({
-    _id: -1,
-  });
+    const rashifals = await Rashifal.find().sort({
+      _id: -1,
+    });
 
-  return Response.json(rashifals);
+    return Response.json(rashifals);
+  } catch (error) {
+    console.error(error);
+    return Response.json(
+      { error: "Failed to fetch Rashifal" },
+      { status: 500 }
+    );
+  }
 }
 
 // POST
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
+    if (!body.zodiac || !body.content?.trim()) {
+      return Response.json(
+        { error: "Zodiac and content are required" },
+        { status: 400 }
+      );
+    }
 
     await connectDB();
 
@@ -38,8 +67,9 @@ export async function POST(req: Request) {
     }).sort({ date: -1, _id: -1 });
 
     if (existing) {
-      existing.content = body.content;
+      existing.content = body.content.trim();
       existing.date = new Date();
+      existing.bengaliDate = body.bengaliDate?.trim() || "";
 
       await existing.save();
 
@@ -48,9 +78,10 @@ export async function POST(req: Request) {
 
     const rashifal = await Rashifal.create({
       zodiac: body.zodiac,
-      content: body.content,
+      content: body.content.trim(),
       image: "",
       date: new Date(),
+      bengaliDate: body.bengaliDate?.trim() || "",
     });
 
     return Response.json(rashifal);
@@ -63,18 +94,26 @@ export async function POST(req: Request) {
     );
   }
 }
+
 // DELETE
 export async function DELETE(req: Request) {
-  const { id } = await req.json();
+  try {
+    const { id } = await req.json();
 
-  await connectDB();
+    await connectDB();
+    await Rashifal.findByIdAndDelete(id);
 
-  await Rashifal.findByIdAndDelete(id);
-
-  return Response.json({
-    success: true,
-  });
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return Response.json(
+      { error: "Failed to delete Rashifal" },
+      { status: 500 }
+    );
+  }
 }
+
+// PUT
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
@@ -86,10 +125,11 @@ export async function PUT(req: Request) {
       {
         zodiac: body.zodiac,
         content: body.content,
+        ...(body.bengaliDate !== undefined && {
+          bengaliDate: body.bengaliDate.trim(),
+        }),
       },
-      {
-        new: true,
-      }
+      { new: true, runValidators: true }
     );
 
     if (!updated) {
