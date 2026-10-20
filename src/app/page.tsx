@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
+import { getDate } from "bangla-calendar";
 
 type Article = {
   _id: string;
@@ -220,12 +221,35 @@ rashifalData.forEach((item) => {
 
   const today = new Date();
 
-  const bengaliDate = today.toLocaleDateString("bn-BD", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+const englishDate = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "Asia/Kolkata",
+}).format(today);
+
+const bengaliDate = getDate(today, {
+  format: "D MMMM, YYYY",
+  calculationMethod: "IN",
+});
+const historicalEvents: Record<string, string> = {
+  "01-23": "২৩ জানুয়ারি নেতাজি সুভাষচন্দ্র বসুর জন্মদিন।",
+  "05-07": "৭ মে বিশ্বকবি রবীন্দ্রনাথ ঠাকুরের জন্মদিন।",
+  "05-24": "২৪ মে বিদ্রোহী কবি কাজী নজরুল ইসলামের জন্মদিন।",
+  "06-27": "২৭ জুন সাহিত্যিক বঙ্কিমচন্দ্র চট্টোপাধ্যায়ের জন্মদিন।",
+  "09-26": "২৬ সেপ্টেম্বর ঈশ্বরচন্দ্র বিদ্যাসাগরের জন্মদিন।",
+  "10-16": "১৬ অক্টোবর ১৯০৫ সালে বঙ্গভঙ্গ কার্যকর হয়েছিল।",
+};
+
+const dateKey = new Intl.DateTimeFormat("en-US", {
+  month: "2-digit",
+  day: "2-digit",
+  timeZone: "Asia/Kolkata",
+}).format(today);
+
+const historicalEvent =
+  historicalEvents[dateKey] ||
+  "আজকের দিনের বাংলার ইতিহাসের উল্লেখযোগ্য ঘটনা শীঘ্রই যোগ করা হবে।";
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -263,22 +287,30 @@ rashifalData.forEach((item) => {
 
             {/* DATE / HISTORY */}
 
+            {/* DATE / HISTORY */}
             <div className="text-center">
-
               <p className="text-sm font-medium text-gray-500">
-                আজ
+                আজকের দিন
               </p>
 
               <h2 className="mt-1 text-lg font-bold text-red-700 md:text-xl">
-                {bengaliDate}
+                {bengaliDate} বঙ্গাব্দ
               </h2>
 
-              <p className="mt-2 text-sm text-gray-600">
-                আজকের বাংলা তারিখ ও ঐতিহাসিক তথ্য
+              <p className="mt-1 text-sm text-gray-600">
+                English Date: {englishDate}
               </p>
 
-            </div>
+              <div className="mt-2">
+                <p className="text-sm font-semibold text-gray-700">
+                  📜 ইতিহাসে আজ
+                </p>
 
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  {historicalEvent}
+                </p>
+              </div>
+            </div>
 
             {/* SOCIAL */}
 
